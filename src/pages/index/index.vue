@@ -5,26 +5,24 @@
     <view v-if="loading">
       <nut-icon name="loading"/>
     </view>
-    <view v-else class="content" id="content">
-      <!-- <nut-infiniteloading
-      containerId = 'content'
-      :is-open-refresh="false"
-      load-txt="loading"
-      :has-more="hasMore"
-      @load-more="loadMore"
-      > -->
-      <view>
-        <view v-for="(item) in photos" :key="item.id" class="item" >
+    <view-block v-else class="content infiniteUl" id="content">
+      <nut-infiniteloading
+        containerId = 'content'
+        :is-open-refresh="false"
+        load-txt="loading"
+        :has-more="hasMore"
+        @load-more="load"
+      >
+        <view-block v-for="(item) in photos[0]" :key="item.id" class="item infiniteLi" >
             <img class="image" :src="`https://picsum.photos/id/${item.id}/1000`" @click="GoDetails(item)">
             <view class="image_info">
               <view class="author">{{item.author}}</view>
               <view>{{item.url}}</view>
               <nut-icon class="goTop" name="top" @click="scrollTop"/>
             </view>
-        </view>
-      </view>
-      <!-- </nut-infiniteloading> -->
-    </view>
+        </view-block>
+      </nut-infiniteloading>
+    </view-block>
   </view>
 </template>
 
@@ -41,17 +39,25 @@ export default {
     const hasMore = ref(true);
 
     const photos = computed(()=> store.state.photos)
+    const load = (done) => {
+      setTimeout(() => {
+        loadMore()
+        done()
+      }, 1000);
+    }
     const loadMore = async ()=>{
       loading.value = true;
       page.value++;
+      console.log("load");
       try{
-          const res = store.dispatch('LOAD_PHOTOS_ACTIONS',{page : 1})
+          const res = store.dispatch('LOAD_PHOTOS_ACTIONS',{page : page.value})
       }catch(error){
           console.log(error)
           hasMore.value = false;
       }finally{
           loading.value = false;
       }
+      
     }
 
     const GoDetails = (info)=>{
@@ -76,7 +82,8 @@ export default {
       hasMore,
       scrollTop,
       loadMore,
-      GoDetails
+      GoDetails,
+      load
     })
   }
   
@@ -135,5 +142,11 @@ export default {
       }
     }
   }
+  .infiniteUl {
+      height: 710px;
+      width: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
 }
 </style>

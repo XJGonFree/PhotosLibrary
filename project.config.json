@@ -1,6 +1,6 @@
 {
   "miniprogramRoot": "dist/",
-  "projectname": "weapp",
+  "projectname": "PhotosLibrary",
   "description": "an app to show photos",
   "appid": "wxbc2a96b729f4f8bb",
   "setting": {

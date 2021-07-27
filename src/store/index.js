@@ -9,7 +9,12 @@ const store = createStore({
   },
   mutations: {//处理同步
     LOAD_PHOTOS_MUTATIONS:(state,photos)=>{
-      state.photos = photos;
+      state.photos.push(photos)
+      for(var i=1;i<state.photos.length;i++){
+        for(var j=0;j<state.photos[i].length;j++){
+          state.photos[0].push(state.photos[i][j])
+        }
+      }
     }
   },
   actions:{//处理异步
