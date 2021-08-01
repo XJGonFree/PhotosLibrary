@@ -129,6 +129,8 @@ export default {
   }
   .content{
     text-align:left;
+    margin:0;
+    padding:0;
     // margin-top:20rpx;
     .item{
       display:flex;margin:20px 2px 10px 2px;position: relative;
