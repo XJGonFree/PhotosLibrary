@@ -1,28 +1,32 @@
 <template>
   <view class="index">
-    <view class="title">PHOTO-LIBRARY</view>
+    <view class="title">PHOTO-LIBRARY<nut-icon name="my" style="" size="30px" @tap="GoMy"/></view>
     <view class="line"/>
     <view v-if="loading">
-      <nut-icon name="loading"/>
+        <nut-icon name="loading"/>
     </view>
-    <view-block v-else class="content infiniteUl" id="content">
-      <nut-infiniteloading
-        containerId = 'content'
-        :is-open-refresh="false"
-        load-txt="loading"
-        :has-more="hasMore"
-        @load-more="load"
-      >
-        <view-block v-for="(item) in photos[0]" :key="item.id" class="item infiniteLi" >
-            <img class="image" :src="`https://picsum.photos/id/${item.id}/1000`" @click="GoDetails(item)">
-            <view class="image_info">
-              <view class="author">{{item.author}}</view>
-              <view>{{item.url}}</view>
-              <nut-icon class="goTop" name="top" @click="scrollTop"/>
-            </view>
-        </view-block>
-      </nut-infiniteloading>
-    </view-block>
+      <view-block v-else class="content infiniteUl" id="content">
+        <nut-infiniteloading
+          containerId = 'content'
+          :is-open-refresh="false"
+          load-txt="loading"
+          :has-more="hasMore"
+          @load-more="load"
+        >
+          <!-- <nut-backtop bottom="100" id="backtop">
+            <template v-slot:content> -->
+              <view-block v-for="(item,index) in photos[0]" :key="item.id" class="item infiniteLi">
+                  <img class="image" :src="`https://picsum.photos/id/${item.id}/1000`" @tap="GoDetails(item,index)">
+                  <view class="image_info">
+                    <view class="author">{{item.author}}</view>
+                    <view>{{item.url}}</view>
+                  </view>
+                  <nut-icon name="addfollow" :key="item.id" class="follow" :color="item.is_follow == false ? 'blue' : 'red'" @tap="addfollow(index)"/>
+              </view-block>
+            <!-- </template>
+          </nut-backtop> -->
+        </nut-infiniteloading>
+      </view-block>
   </view>
 </template>
 
@@ -45,6 +49,7 @@ export default {
         done()
       }, 1000);
     }
+
     const loadMore = async ()=>{
       loading.value = true;
       page.value++;
@@ -57,21 +62,29 @@ export default {
       }finally{
           loading.value = false;
       }
-      
+    }
+    const addfollow = (index)=>{
+      store.commit("ADD_TO_MYFOLLOW",index)
     }
 
-    const GoDetails = (info)=>{
+    const GoDetails = (info,index)=>{
       Taro.navigateTo({
-        url: `/pages/details/index?id=${info.id}`
+        url: `/pages/details/index?id=${info.id}&index=${index}&is_follow=${info.is_follow}`
+      })
+    }
+    const GoMy = ()=>{
+      Taro.switchTab({
+        url:`/pages/homepage/index`
       })
     }
 
-    const scrollTop = ()=>{
-      Taro.pageScrollTo({
-        scrollTop: 0,
-        duration: 300
-      })
-    }
+    // const scrollTop = ()=>{
+    //   Taro.pageScrollTo({
+    //     scrollTop: 0,
+    //     duration: 300
+    //   })
+    //   console.log("置顶")
+    // }
     onMounted(()=>{
       loadMore();
     });
@@ -80,9 +93,11 @@ export default {
       loading,
       photos,
       hasMore,
-      scrollTop,
+      addfollow,
+      // scrollTop,
       loadMore,
       GoDetails,
+      GoMy,
       load
     })
   }
@@ -96,12 +111,15 @@ export default {
   font-family: 'Work Sans', sans-serif;;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
+  height:100vh;
   .title{
-        justify-content: center;
-        margin:20px auto;
-        font-size:3ex;
-        font-weight: bolder;
+      justify-content: center;
+      margin:10px 0 20px 0;
+      font-size:3ex;
+      font-weight: bolder;
+      .nut-icon{
+        margin-left:200rpx;
+      }
   }
   .line{
       border:gray solid 2px;
@@ -111,9 +129,9 @@ export default {
   }
   .content{
     text-align:left;
-    margin-top:20rpx;
+    // margin-top:20rpx;
     .item{
-      display:flex;margin:20px 2px;position: relative;
+      display:flex;margin:20px 2px 10px 2px;position: relative;
       .image{
       width:50%;
       height:175px;
@@ -129,12 +147,13 @@ export default {
         word-break:break-all; /*支持IE，chrome，FF不支持*/
         word-wrap:break-word;/*支持IE，chrome，FF*/
         .author{
+          margin-top: 20px;
           font-size:19px;
           font-weight:bold;
           margin-bottom: 20px;
         }
       }
-      .goTop{
+      .follow{
         font-size: 20px;
         position: absolute;
         bottom: 0;
@@ -143,10 +162,14 @@ export default {
     }
   }
   .infiniteUl {
-      height: 710px;
+      height: 90%;
+      max-height: 90%;
       width: 100%;
       overflow-y: auto;
       overflow-x: hidden;
-    }
+  }
+  .nut-infinite-bottom{
+    padding: 0;
+  }
 }
 </style>

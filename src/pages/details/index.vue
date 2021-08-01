@@ -1,5 +1,8 @@
 <template>
+    
     <view v-if="info" class="index">
+        <nut-icon class="follow_o_del" :name="is_follow == 'false' ? 'addfollow' : 'del'" @tap="is_follow == 'false' ? addfollow(index) : delfollow(id,index)" />
+        <nut-navbar  @on-click-back="GoIndex" title="图片详情"></nut-navbar>
         <img class="resize" :src="`https://picsum.photos/id/${id}/2000`" alt="">
         <view class="content">
             <view class="title">作者</view>
@@ -9,21 +12,25 @@
             <view class="title">博客地址</view>
                 <view class="infomage">{{info.url}}</view>
         </view>
-        <nut-button size="large" shape="square" @click="GoIndex">返回</nut-button>
     </view>
 </template>
 <script>
 import {ref,onMounted } from 'vue'
 import Taro from '@tarojs/taro'
+import {useStore} from 'vuex'
 export default {
     name: 'detail',
     setup(){
+        const store = useStore();
         const res = ref([]);
         const info = ref([]);
         const id = ref(0);
-
+        const index = ref(0);
+        const is_follow = ref(false);
         const getConnect = async()=>{
-            id.value = Taro.getCurrentInstance().router.params.id
+            id.value = Taro.getCurrentInstance().router.params.id;
+            index.value = Taro.getCurrentInstance().router.params.index;
+            is_follow.value = Taro.getCurrentInstance().router.params.is_follow;
             const url = `https://picsum.photos/id/${id.value}/info`
             try{
                 res.value = await Taro.request({url})
@@ -32,6 +39,16 @@ export default {
             }finally{
                 info.value = res.value.data
             }
+        }
+
+        const addfollow = (index)=>{
+            is_follow.value = 'true'
+            store.commit("ADD_TO_MYFOLLOW",index)
+        }
+        
+        const delfollow = (id,index)=>{
+            is_follow.value = 'false'
+            store.commit("DEL_MYFOLLOW",{id:id,index:index})
         }
         const GoIndex = ()=>{
             Taro.navigateBack({
@@ -44,6 +61,10 @@ export default {
         return({
             info,
             id,
+            index,
+            is_follow,
+            addfollow,
+            delfollow,
             GoIndex
         })
     }
@@ -70,5 +91,18 @@ export default {
     }
     .content view{
         margin: 20px;
+    }
+    .nut-navbar{
+        margin:0;
+        // height:-webkit-fill-available;
+        height: 20%;
+    }
+    .follow_o_del{
+        position:absolute;
+        z-index:99;
+        right: 4%;
+        top: 2%;
+        font-size: 20px;
+        font-weight: bolder;
     }
 </style>
