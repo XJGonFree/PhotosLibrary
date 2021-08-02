@@ -143,6 +143,7 @@ export default {
       display: block;
   }
   .content{
+    text-align:left;
     margin:0;
     padding:0;
     // margin-top:20rpx;
