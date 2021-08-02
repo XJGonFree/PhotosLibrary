@@ -28,38 +28,37 @@ export default {
         }
 
         
-        onMounted(() => {
-            try {
-                let value = Taro.getStorageSync('data')
+        // onMounted(() => {
+        //     try {
+        //         let value = Taro.getStorageSync('data')
                 
-                if (value) {
-                    // Do something with return value
-                    store.commit("UPDATE_MYFOLLOW",JSON.parse(value))
-                }
-            } catch (e) {
-            // Do something when catch error
-                console.log(e)
-            }
-
-        })
+        //         if (value) {
+        //             // Do something with return value
+        //             store.commit("UPDATE_MYFOLLOW",JSON.parse(value))
+        //         }
+        //     } catch (e) {
+        //     // Do something when catch error
+        //         console.log(e)
+        //     }
+        // })
 
         const GoIndex = ()=>{
             Taro.switchTab({
                 url:`/pages/index/index`,
-                success:()=>{
-                    Taro.setStorage({
-                        key:"data",
-                        data:JSON.stringify(follows.value)
-                    })
-                    console.log("存储完毕")
-                }
             })
         }
         const GoDetails = (info)=>{
             Taro.navigateTo({
-                url: `/pages/details/index?id=${info.id}&index=${info.photos_index}&is_follow=${info.is_follow}`
+                url: `/details/index?id=${info.id}&index=${info.photos_index}&is_follow=${info.is_follow}`
             })
         }
+        Taro.onAppHide(()=>{
+            Taro.setStorage({
+                key:"data",
+                data:JSON.stringify(follows.value)
+            })
+            console.log("存储完毕")
+        })
         return({
             follows,
             delfollow,

@@ -1,4 +1,4 @@
-import { createStore } from 'vuex';
+import { useStore,createStore } from 'vuex';
 import Taro from '@tarojs/taro';
 // Create a new store instance.
 const store = createStore({
@@ -35,32 +35,39 @@ const store = createStore({
         Taro.showToast({
           title: '已添加至收藏夹',
           icon: 'success',
-          duration: 2000
+          duration: 500
         })
       }
     },
     DEL_MYFOLLOW:(state,{id,index})=>{
-      
-      for (var item in state.myfollow){
+      Taro.showToast({
+        title: '已从收藏夹清除',
+        icon: 'none',
+        duration: 1000
+      })
+      for (let item in state.myfollow){
         if(state.myfollow[item].id==id){
           state.myfollow.splice(item,1)
           state.photos[0][index].is_follow=false;
         }
       }
-      Taro.showToast({
-        title: '已从收藏夹清除',
-        icon: 'none',
-        duration: 2000
-      })
     },
     UPDATE_MYFOLLOW:(state,myfollow)=>{
       Taro.showToast({
         title: '图库更新成功',
         icon: 'none',
-        duration: 2000
+        duration: 1000
       })
       state.myfollow = myfollow
-    } 
+    },
+    CHANGE_PHOTOS_TO_MYFOLLOW:(state)=>{
+      for(let pho in state.photos[0]){
+        for(let fol in state.myfollow)
+          if(state.photos[0][pho].id==state.myfollow[fol].id){
+            state.photos[0][pho].is_follow=state.myfollow[fol].is_follow
+        }
+      }
+    }
   },
   actions:{//处理异步
     /**
@@ -77,6 +84,7 @@ const store = createStore({
         url,
       });
       context.commit("LOAD_PHOTOS_MUTATIONS",res.data);
+      context.commit("CHANGE_PHOTOS_TO_MYFOLLOW",context.myfollow);
       return res.data;
     }
   }

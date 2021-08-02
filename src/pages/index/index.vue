@@ -69,7 +69,7 @@ export default {
 
     const GoDetails = (info,index)=>{
       Taro.navigateTo({
-        url: `/pages/details/index?id=${info.id}&index=${index}&is_follow=${info.is_follow}`
+        url: `/details/index?id=${info.id}&index=${index}&is_follow=${info.is_follow}`
       })
     }
     const GoMy = ()=>{
@@ -77,7 +77,7 @@ export default {
         url:`/pages/homepage/index`
       })
     }
-
+    
     // const scrollTop = ()=>{
     //   Taro.pageScrollTo({
     //     scrollTop: 0,
@@ -85,10 +85,25 @@ export default {
     //   })
     //   console.log("置顶")
     // }
+    
+    const getStoreData = ()=>{
+      try {
+          let value = Taro.getStorageSync('data')
+          
+          if (value) {
+              // Do something with return value
+              store.commit("UPDATE_MYFOLLOW",JSON.parse(value))
+          }
+      } catch (e) {
+      // Do something when catch error
+          console.log(e)
+      }
+    }
+
     onMounted(()=>{
       loadMore();
+      getStoreData();
     });
-    
     return({
       loading,
       photos,
@@ -128,7 +143,8 @@ export default {
       display: block;
   }
   .content{
-    text-align:left;
+    margin:0;
+    padding:0;
     // margin-top:20rpx;
     .item{
       display:flex;margin:20px 2px 10px 2px;position: relative;

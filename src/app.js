@@ -3,6 +3,7 @@ import NutUI from '@nutui/nutui-taro';
 import '@nutui/nutui-taro/dist/style.css';
 import store from './store/index'
 import './app.scss'
+import Taro from "@tarojs/taro"
 
 const App = createApp({
   onShow (options) {},

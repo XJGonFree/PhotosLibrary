@@ -1,7 +1,7 @@
 export default {
   pages: [
     'pages/index/index',
-    'pages/details/index',
+    // 'pages/details/index',
     'pages/homepage/index'
   ],
   window: {
@@ -19,4 +19,12 @@ export default {
       "text": "个人页面"
     }]
   },
+  "subpackages": [
+    {
+      "root": "details",
+      "pages": [
+        "index"
+      ]
+    }
+  ]
 }
